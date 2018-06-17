@@ -312,11 +312,10 @@ class ParamManager(object):
         test_reads = bam_file.fetch()
         insert_sizes = []
         read_iter = 0
-        # pdb.set_trace()
         for read in test_reads:
             if read.is_duplicate or read.mapq == 0:
                 continue
-            proper_map = read.flag == 83 or read.flag == 99 # changed this to include reads that don't have "properly mapped" bit set, something wrong with our aligner?
+            proper_map = read.flag in [83, 99, 81, 97] # changed this to include reads that don't have "properly mapped" bit set, something wrong with our aligner?
             if read.is_read1 and proper_map:  # Sample the read and store the insert size to its partner.
                 read_iter += 1
                 insert_sizes.append(abs(read.tlen))
@@ -324,6 +323,8 @@ class ParamManager(object):
                     self.set_param('read_len', read.rlen)
             if read_iter == nsample_reads:
                 break
+        if not insert_sizes:
+            sys.exit("No properly mapped reads in bam file")
         insertsize_median = utils.median(insert_sizes)
         insertsize_sd = utils.stddev(utils.remove_outliers(insert_sizes))  # Calculate the standard deviation of the sample read pairs insert sizes.
         self.set_param('insertsize_thresh', insertsize_median + (5 * insertsize_sd))  # Set the threshold to be median + 5 standard deviations.
