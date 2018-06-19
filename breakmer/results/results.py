@@ -460,12 +460,12 @@ class SVResult(object):
             left_idx = qb[0] - min(qb[1],5)
             right_idx = qb[0] + min(qb[2],5)
             bc = self.contig.get_contig_counts().get_counts(left_idx, right_idx, sv_type)
-            try:
-                brkpt_counts['n'].append(min(bc))
-                brkpt_counts['d'].append(min(self.contig.get_contig_counts().get_counts((qb[0]-1), (qb[0]+1), sv_type)))
-                brkpt_counts['b'].append(self.contig.get_contig_counts().get_counts(qb[0], qb[0], sv_type))
-            except:
-                pdb.set_trace()
+            # try:
+            brkpt_counts['n'].append(min(bc))
+            brkpt_counts['d'].append(min(self.contig.get_contig_counts().get_counts((qb[0]-1), (qb[0]+1), sv_type)))
+            brkpt_counts['b'].append(self.contig.get_contig_counts().get_counts(qb[0], qb[0], sv_type))
+            # except:
+            #     pdb.set_trace()
             brkpt_kmers.append(self.contig.get_kmer_locs()[qb[0]])
             brkpt_rep_filt = brkpt_rep_filt or (comp_vec[qb[0]] < (avg_comp/2))
             utils.log(self.logging_name, 'debug', 'Read count around breakpoint %d: %s'%(qb[0],",".join([str(x) for x in bc])))
