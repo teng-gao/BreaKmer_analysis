@@ -8,6 +8,7 @@ BreaKmer results module
 
 import pysam
 import breakmer.utils as utils
+import pdb
 
 
 __author__ = "Ryan Abo"
@@ -186,13 +187,13 @@ class SVResult(object):
             if br.strand == '-':
                 tbrkpt = [ts]
                 filt_rep_start = br.filter_reps_edges[0]
-        elif last_iter: 
+        elif last_iter:
             brkpt_d['q'][1][-1][2] = qe - brkpt_d['q'][1][-1][0]
             brkpt_d['q'][1].append([qs, qs-brkpt_d['q'][0][0], qe-qs])
             tbrkpt = [ts]
             filt_rep_start = br.filter_reps_edges[0]
             if br.strand == '-':
-                tbrkpt = [te] 
+                tbrkpt = [te]
                 filt_rep_start = br.filter_reps_edges[1]
         else:
             brkpt_d['q'][1][-1][2] = qe - brkpt_d['q'][1][-1][1]
@@ -226,12 +227,12 @@ class SVResult(object):
             chrom, locs = bp.split(':')
             chrom = chrom.replace('chr', '')
             ll = locs.split('-')
-            if len(ll) > 1: 
+            if len(ll) > 1:
                 brkpts.append((chrom, int(ll[0]), int(ll[0])+1))
                 brkpts.append((chrom, int(ll[1]), int(ll[1])+1))
             else:
                 brkpts.append((chrom, int(ll[0]), int(ll[0])+1))
-          
+
         bamfile = pysam.Samfile(self.sample_bam,'rb')
 
         covs = [0]*len(brkpts)
@@ -247,7 +248,7 @@ class SVResult(object):
 
 
             for aread in areads:
-                if aread.is_duplicate or aread.is_qcfail or aread.is_unmapped or aread.mapq < 10: 
+                if aread.is_duplicate or aread.is_qcfail or aread.is_unmapped or aread.mapq < 10:
                     continue
                 cov += 1
             covs[bp_index] = cov
@@ -307,7 +308,7 @@ class SVResult(object):
                             rearr_values['disc_read_count'] += 1
                     else:
                         if (r1p <= (brkpt2 + bp_buffer) and r1p >= (brkpt1 - bp_buffer)) and r2p >= (brkpt2 - bp_buffer):
-                            rearr_values['disc_read_count'] += 1 
+                            rearr_values['disc_read_count'] += 1
             elif strands[0] == strands[1]:
                 tgap = brkpts[1] - brkpts[0]
                 qgap = qcoords[1][0] - qcoords[0][1]
@@ -363,14 +364,14 @@ class SVResult(object):
         #             rs += 1
         #         else:
         #           if (r1p <= brkpts[1] and r1p >= brkpts[0]) and r2p >= brkpts[1]:
-        #             rs += 1 
+        #             rs += 1
         #     elif (strands[0] == "+" and strands[1] == "+") and (brkpts[0] > brkpts[1]):
         #       utils.log(self.logging_name, 'debug', 'HIT TANDEM DUP')
         #       hit = True
         #       sv_type = 'tandem_dup'
         #       # Tandem dup
         #       for read_pair in disc_reads['td']:
-        #         r1p, r2p, r1s, r2s, qname = read_pair 
+        #         r1p, r2p, r1s, r2s, qname = read_pair
         #         if (r1p <= brkpts[0] and r1p >= brkpts[1]) and ():
         #             rs += 1
 
@@ -408,7 +409,7 @@ class SVResult(object):
             utils.log(self.logging_name, 'debug', 'Not inversion or tandem dup, checking for odd read pairs around breakpoints')
             utils.log(self.logging_name, 'debug', 'Not inversion or tandem dup, checking for odd read pairs around breakpoints')
             rs = [0] * len(brkpts)
-            for i in range(len(brkpts)): 
+            for i in range(len(brkpts)):
                 b = brkpts[i]
                 for read_pair in disc_reads['other']:
                     r1p, r2p, r1s, r2s, qname = read_pair
@@ -459,7 +460,10 @@ class SVResult(object):
             left_idx = qb[0] - min(qb[1],5)
             right_idx = qb[0] + min(qb[2],5)
             bc = self.contig.get_contig_counts().get_counts(left_idx, right_idx, sv_type)
-            brkpt_counts['n'].append(min(bc))
+            try:
+                brkpt_counts['n'].append(min(bc))
+            except:
+                pdb.set_trace()
             brkpt_counts['d'].append(min(self.contig.get_contig_counts().get_counts((qb[0]-1), (qb[0]+1), sv_type)))
             brkpt_counts['b'].append(self.contig.get_contig_counts().get_counts(qb[0], qb[0], sv_type))
             brkpt_kmers.append(self.contig.get_kmer_locs()[qb[0]])
@@ -490,7 +494,7 @@ class SVResult(object):
     #     '''
 
     #     res_lst = []
-    #     if values: 
+    #     if values:
     #       for v in values:
     #         if not isinstance(values[v], list): values[v] = [values[v]]
     #         self.result_values[v] = ",".join([str(x) for x in values[v]])
@@ -577,7 +581,7 @@ class SVEvent(object):
     #     '''
 
     #     res_lst = []
-    #     if values: 
+    #     if values:
     #       for v in values:
     #         if not isinstance(values[v], list): values[v] = [values[v]]
     #         self.result_values[v] = ",".join([str(x) for x in values[v]])
@@ -608,12 +612,12 @@ class SVEvent(object):
 #       chrom,locs = bp.split(':')
 #       chrom = chrom.replace('chr','')
 #       ll = locs.split('-')
-#       if len(ll) > 1: 
+#       if len(ll) > 1:
 #         brkpts.append((chrom,int(ll[0]),int(ll[0])+1))
 #         brkpts.append((chrom,int(ll[1]),int(ll[1])+1))
 #       else:
 #         brkpts.append((chrom, int(ll[0]), int(ll[0])+1))
-      
+
 #     bamfile = pysam.Samfile(self.sample_bam,'rb')
 
 #     covs = [0]*len(brkpts)
@@ -624,7 +628,7 @@ class SVEvent(object):
 #       areads = bamfile.fetch(str(c), s, e)
 
 #       for aread in areads:
-#         if aread.is_duplicate or aread.is_qcfail or aread.is_unmapped or aread.mapq < 10: 
+#         if aread.is_duplicate or aread.is_qcfail or aread.is_unmapped or aread.mapq < 10:
 #           continue
 #         cov += 1
 #       covs[bp_index] = cov
@@ -644,7 +648,7 @@ class SVEvent(object):
 
 #   def get_indel_result(self):
 #     br = self.blat_res[0][1]
-#     self.set_result_value('anno_genes', br.get_gene_anno()) 
+#     self.set_result_value('anno_genes', br.get_gene_anno())
 #     self.set_result_value('repeat_matching', '0.0:'+str(br.get_nmatch_total()))
 #     self.set_result_value('mismatches', br.get_nmatches('mis'))
 #     self.set_result_value('strands', br.strand)
@@ -674,13 +678,13 @@ class SVEvent(object):
 #       if br.strand == '-':
 #         tbrkpt = [ts]
 #         filt_rep_start = br.filter_reps_edges[0]
-#     elif last_iter: 
+#     elif last_iter:
 #       brkpt_d['q'][1][-1][2] = qe - brkpt_d['q'][1][-1][0]
 #       brkpt_d['q'][1].append([qs,qs-brkpt_d['q'][0][0],qe-qs])
 #       tbrkpt = [ts]
 #       filt_rep_start = br.filter_reps_edges[0]
 #       if br.strand == '-':
-#         tbrkpt = [te] 
+#         tbrkpt = [te]
 #         filt_rep_start = br.filter_reps_edges[1]
 #     else:
 #       brkpt_d['q'][1][-1][2] = qe - brkpt_d['q'][1][-1][1]
@@ -702,7 +706,7 @@ class SVEvent(object):
 #   def get_svs_result(self, query_region, params, disc_reads):
 #     utils.log(self.logging_name, 'info', 'Resolving SVs call from blat results')
 #     blat_res = self.blat_res
-#     blat_res_sorted = sorted(blat_res, key=lambda blat_res: blat_res[0]) 
+#     blat_res_sorted = sorted(blat_res, key=lambda blat_res: blat_res[0])
 #     brkpts = {'t':{'in_target':None, 'other':None }, 'formatted':[], 'r':[], 'q': [[0,0],[]], 'chrs':[], 'brkpt_str':[], 'tcoords':[], 'f':[]}
 #     res_values = {'target_breakpoints':[], 'align_cigar':[], 'sv_type':'', 'strands':[], 'mismatches':[], 'repeat_matching':[], 'anno_genes':[], 'disc_read_count':0 }
 #     br_valid = [True, True]
@@ -722,9 +726,9 @@ class SVEvent(object):
 
 #     result = None
 #     self.br_sorted = sorted(self.br_sorted, key=lambda br: br[1])
-#     if not self.multiple_genes(brkpts['chrs'], brkpts['r'], res_values['anno_genes']): 
-#       brkpt_counts, brkpt_kmers, brkpt_rep_filt = self.get_brkpt_counts_filt(brkpts, 'rearr') 
-#       rearr_type, disc_read_support = self.define_rearr(brkpts['r'], res_values['strands'], brkpts['tcoords'], disc_reads) 
+#     if not self.multiple_genes(brkpts['chrs'], brkpts['r'], res_values['anno_genes']):
+#       brkpt_counts, brkpt_kmers, brkpt_rep_filt = self.get_brkpt_counts_filt(brkpts, 'rearr')
+#       rearr_type, disc_read_support = self.define_rearr(brkpts['r'], res_values['strands'], brkpts['tcoords'], disc_reads)
 #       if not self.filter_rearr(query_region, params, brkpts['r'], brkpt_counts, brkpt_kmers, rearr_type, disc_read_support):
 #         res_values['sv_type'] = 'rearrangement'
 #         if rearr_type != 'rearrangement':
@@ -735,9 +739,9 @@ class SVEvent(object):
 #         res_values['split_read_count'] = brkpt_counts['b']
 #         result = self.format_result(res_values)
 #     elif max(self.contig_rcounts.others) >= params.get_param('trl_sr_thresh'):
-#       brkpt_counts, brkpt_kmers, brkpt_rep_filt = self.get_brkpt_counts_filt(brkpts, 'trl') 
+#       brkpt_counts, brkpt_kmers, brkpt_rep_filt = self.get_brkpt_counts_filt(brkpts, 'trl')
 #       disc_read_count = self.check_disc_reads(brkpts['t'], query_region, disc_reads['disc'])
-#       if not self.filter_trl(br_valid, query_region, params, brkpt_counts, brkpt_kmers, disc_read_count, res_values['anno_genes'], max_repeat, brkpt_rep_filt): 
+#       if not self.filter_trl(br_valid, query_region, params, brkpt_counts, brkpt_kmers, disc_read_count, res_values['anno_genes'], max_repeat, brkpt_rep_filt):
 #         res_values['disc_read_count'] = disc_read_count
 #         res_values['sv_type'] = ['trl']
 #         res_values['target_breakpoints'] = brkpts['brkpt_str']
@@ -747,8 +751,8 @@ class SVEvent(object):
 
 #   def get_brkpt_counts_filt(self, brkpts, sv_type):
 # #    print 'Contig seq', self.contig_seq
-# #    print 'Breakpoint simple repeat filter', brkpts['f'] 
-#     avg_comp, comp_vec = utils.calc_contig_complexity(self.contig_seq) 
+# #    print 'Breakpoint simple repeat filter', brkpts['f']
+#     avg_comp, comp_vec = utils.calc_contig_complexity(self.contig_seq)
 # #    print 'Contig avg complexity', avg_comp
 # #    print 'Contig complexity vec', comp_vec
 #     brkpt_rep_filt = False
@@ -776,7 +780,7 @@ class SVEvent(object):
 #     return brkpt_counts, brkpt_kmers, brkpt_rep_filt
 
 #   def call_rearr(self):
-#       rearr_type, disc_read_support = self.define_rearr(brkpts['r'], res_values['strands'], brkpts['tcoords'], disc_reads) 
+#       rearr_type, disc_read_support = self.define_rearr(brkpts['r'], res_values['strands'], brkpts['tcoords'], disc_reads)
 #       if not self.filter_rearr(query_region, params, brkpts['r'], brkpt_counts, brkpt_kmers, rearr_type, disc_read_support):
 #         res_values['sv_type'] = 'rearrangement'
 #         if rearr_type != 'rearrangement': res_values['sv_subtype'] = rearr_type
@@ -788,7 +792,7 @@ class SVEvent(object):
 
 #   def call_trl(self):
 #       disc_read_count = self.check_disc_reads(brkpts['t'], query_region, disc_reads['disc'])
-#       if not self.filter_trl(br_valid, query_region, params, brkpt_counts, brkpt_kmers, disc_read_count, res_values['anno_genes'], max_repeat, brkpt_rep_filt): 
+#       if not self.filter_trl(br_valid, query_region, params, brkpt_counts, brkpt_kmers, disc_read_count, res_values['anno_genes'], max_repeat, brkpt_rep_filt):
 #         res_values['disc_read_count'] = disc_read_count
 #         res_values['sv_type'] = ['trl']
 #         res_values['target_breakpoints'] = brkpts['brkpt_str']
@@ -801,7 +805,7 @@ class SVEvent(object):
 #       contained = True
 #     elif coord2[0] >= coord1[0] and coord2[1] <= coord1[1]:
 #       contained = True
-#     return contained 
+#     return contained
 
 #   def define_rearr(self, brkpts, strands, tcoords, disc_reads):
 #     type = 'rearrangement'
@@ -823,19 +827,19 @@ class SVEvent(object):
 #                 rs += 1
 #             else:
 #               if (r1p <= brkpts[1] and r1p >= brkpts[0]) and r2p >= brkpts[1]:
-#                 rs += 1 
+#                 rs += 1
 #         elif (strands[0] == "+" and strands[1] == "+") and (brkpts[0] > brkpts[1]):
 #           utils.log(self.logging_name, 'debug', 'HIT TANDEM DUP')
 #           hit = True
 #           type = 'tandem_dup'
 #           # Tandem dup
 #           for read_pair in disc_reads['td']:
-#             r1p, r2p, r1s, r2s, qname = read_pair 
+#             r1p, r2p, r1s, r2s, qname = read_pair
 #             if (r1p <= brkpts[0] and r1p >= brkpts[1]) and (): rs += 1
 #     if not hit:
 #       utils.log(self.logging_name, 'debug', 'Not inversion or tandem dup, checking for odd read pairs around breakpoints')
 #       rs = [0] * len(brkpts)
-#       for i in range(len(brkpts)): 
+#       for i in range(len(brkpts)):
 #         b = brkpts[i]
 #         for read_pair in disc_reads['other']:
 #           r1p, r2p, r1s, r2s, qname = read_pair
@@ -843,5 +847,4 @@ class SVEvent(object):
 #             utils.log(self.logging_name, 'debug', 'Adding read support from read %s, with strands %d, %d and positions %d, %d for breakpoint at %d' % (qname, r1s, r2s, r1p, r2p, b))
 #             rs[i] += 1
 #       rs = max(rs)
-#     return type, rs   
-
+#     return type, rs
