@@ -489,7 +489,7 @@ def extract_refseq_fa(gene_coords, ref_path, ref_fa, direction, target_fa_fn, bu
         # ref_d = SeqIO.to_dict(SeqIO.parse(ref_fa, 'fasta'))
         # seq = ref_d[chrom].seq[(start_coord - buffer_size):(end_coord + buffer_size)]
         seq_str = ''
-        seq = Seq(pysam.FastaFile(ref_fa).fetch("2", start_coord - buffer_size, end_coord + buffer_size))
+        seq = Seq(pysam.FastaFile(ref_fa).fetch(chrom, start_coord - buffer_size, end_coord + buffer_size))
         if direction == "reverse":
             seq_str = str(seq.reverse_complement())
         else:
